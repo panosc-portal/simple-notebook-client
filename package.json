@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc -p src && webpack",
+    "build": "webpack",
     "prepublishOnly": "npm run build",
     "serve:notebook": "python2 server/main.py",
     "serve:app": "http-server . -p 5555"
@@ -33,6 +33,7 @@
     "rimraf": "~3.0.0",
     "style-loader": "~1.0.1",
     "svg-url-loader": "~3.0.3",
+    "ts-loader": "^6.2.1",
     "typescript": "~3.7.3",
     "url-loader": "~3.0.0",
     "watch": "~1.0.2",
