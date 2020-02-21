@@ -2,8 +2,17 @@
 <html lang="en">
   <head>
     <title>Notebook Demo</title>
+    <style>
+      body {
+        background: white;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
   <body>
+    <esrf-notebook></esrf-notebook>
+
     <script id="jupyter-config-data" type="application/json">
       {
         "baseUrl": "http://localhost:9000/",
@@ -13,6 +22,7 @@
         "mathjaxUrl": "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"
       }
     </script>
+
     <script src="/dist/notebook.js"></script>
   </body>
 </html>

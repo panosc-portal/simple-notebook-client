@@ -23,31 +23,17 @@ import {
 } from '@jupyterlab/rendermime';
 import { SetupCommands } from './commands';
 
-import '@jupyterlab/application/style/index.css';
-import '@jupyterlab/codemirror/style/index.css';
-import '@jupyterlab/notebook/style/index.css';
-import '@jupyterlab/theme-light-extension/style/index.css';
-import '../index.css';
+import styles from './notebook.css';
 
-function main(): void {
-  let manager = new ServiceManager();
-  void manager.ready.then(() => {
-    createApp(manager);
-  });
-}
-
-function createApp(manager: ServiceManager.IManager): void {
+function createApp(root: HTMLElement, manager: ServiceManager.IManager): void {
   // Initialize the command registry with the bindings.
   let commands = new CommandRegistry();
-  let useCapture = true;
 
   // Setup the keydown listener for the document.
   document.addEventListener(
     'keydown',
-    event => {
-      commands.processKeydownEvent(event);
-    },
-    useCapture
+    commands.processKeydownEvent.bind(commands),
+    true
   );
 
   let rendermime = new RenderMimeRegistry({
@@ -58,18 +44,14 @@ function createApp(manager: ServiceManager.IManager): void {
     }),
   });
 
-  let opener = {
-    open: (widget: Widget) => {
-      // Do nothing for sibling widgets for now.
-    },
-  };
-
+  let opener = { open: (widget: Widget) => {} };
   let docRegistry = new DocumentRegistry();
   let docManager = new DocumentManager({
     registry: docRegistry,
     manager,
     opener,
   });
+
   let mFactory = new NotebookModelFactory({});
   let editorFactory = editorServices.factoryService.newInlineEditor;
   let contentFactory = new NotebookPanel.ContentFactory({ editorFactory });
@@ -85,6 +67,7 @@ function createApp(manager: ServiceManager.IManager): void {
     contentFactory,
     mimeTypeService: editorServices.mimeTypeService,
   });
+
   docRegistry.addModelFactory(mFactory);
   docRegistry.addWidgetFactory(wFactory);
 
@@ -113,12 +96,38 @@ function createApp(manager: ServiceManager.IManager): void {
   // Hide the widget when it first loads.
   completer.hide();
 
-  // Attach the panel to the DOM.
-  nbWidget.id = 'main';
-  Widget.attach(nbWidget, document.body);
-  Widget.attach(completer, document.body);
+  // Attach the widgets to the root DOM element.
+  Widget.attach(nbWidget, root);
+  Widget.attach(completer, root);
 
   SetupCommands(commands, palette, nbWidget, handler);
 }
 
-window.addEventListener('load', main);
+class ESRFNotebook extends HTMLElement {
+  constructor() {
+    super();
+
+    const shadowRoot = this.attachShadow({ mode: 'closed' });
+
+    // Put all styles inside web component and make sure custom variables still work
+    const styleElem = document.createElement('style');
+    styleElem.innerHTML = styles.toString().replace(/:root/g, ':host');
+    shadowRoot.appendChild(styleElem);
+
+    // Create wrapper for notebook and append to body first, so `Widget.attach` doesn't complain
+    const rootElem = document.createElement('div');
+    rootElem.id = 'notebook';
+    document.body.appendChild(rootElem);
+
+    // Initialise notebook
+    const manager = new ServiceManager();
+    manager.ready.then(() => {
+      createApp(rootElem, manager);
+
+      // Move wrapper element inside web component
+      shadowRoot.appendChild(rootElem);
+    });
+  }
+}
+
+window.customElements.define('esrf-notebook', ESRFNotebook);

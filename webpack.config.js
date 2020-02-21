@@ -12,7 +12,7 @@ module.exports = {
   module: {
     rules: [
       { test: /\.ts$/, use: 'ts-loader' },
-      { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+      { test: /\.css$/, use: ['css-loader'] },
       {
         // In .css files, svg is loaded as a data URI.
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,

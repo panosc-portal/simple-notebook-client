@@ -1,6 +1,7 @@
 {
   "$schema": "http://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    "outDir": "dist",
     "allowSyntheticDefaultImports": true,
     "composite": true,
     "declaration": true,
