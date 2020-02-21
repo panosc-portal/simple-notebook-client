@@ -6,20 +6,20 @@ import { MathJaxTypesetter } from '@jupyterlab/mathjax2';
 import {
   NotebookPanel,
   NotebookWidgetFactory,
-  NotebookModelFactory
+  NotebookModelFactory,
 } from '@jupyterlab/notebook';
 import {
   CompleterModel,
   Completer,
   CompletionHandler,
-  KernelConnector
+  KernelConnector,
 } from '@jupyterlab/completer';
 import { editorServices } from '@jupyterlab/codemirror';
 import { DocumentManager } from '@jupyterlab/docmanager';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import {
   RenderMimeRegistry,
-  standardRendererFactories as initialFactories
+  standardRendererFactories as initialFactories,
 } from '@jupyterlab/rendermime';
 import { SetupCommands } from './commands';
 
@@ -54,21 +54,21 @@ function createApp(manager: ServiceManager.IManager): void {
     initialFactories: initialFactories,
     latexTypesetter: new MathJaxTypesetter({
       url: PageConfig.getOption('mathjaxUrl'),
-      config: PageConfig.getOption('mathjaxConfig')
-    })
+      config: PageConfig.getOption('mathjaxConfig'),
+    }),
   });
 
   let opener = {
     open: (widget: Widget) => {
       // Do nothing for sibling widgets for now.
-    }
+    },
   };
 
   let docRegistry = new DocumentRegistry();
   let docManager = new DocumentManager({
     registry: docRegistry,
     manager,
-    opener
+    opener,
   });
   let mFactory = new NotebookModelFactory({});
   let editorFactory = editorServices.factoryService.newInlineEditor;
@@ -83,7 +83,7 @@ function createApp(manager: ServiceManager.IManager): void {
     canStartKernel: true,
     rendermime,
     contentFactory,
-    mimeTypeService: editorServices.mimeTypeService
+    mimeTypeService: editorServices.mimeTypeService,
   });
   docRegistry.addModelFactory(mFactory);
   docRegistry.addWidgetFactory(wFactory);
@@ -98,7 +98,7 @@ function createApp(manager: ServiceManager.IManager): void {
   const model = new CompleterModel();
   const completer = new Completer({ editor, model });
   const connector = new KernelConnector({
-    session: nbWidget.context.sessionContext.session
+    session: nbWidget.context.sessionContext.session,
   });
   const handler = new CompletionHandler({ completer, connector });
 
